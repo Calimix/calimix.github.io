@@ -41,14 +41,29 @@ jobs:
       # Installs HTMLHint and Stylelint using pnpm
       - name: Install dependencies
         run: |
+          set -e
           npm install -g pnpm
           pnpm install htmlhint stylelint stylelint-config-standard --save-dev
 
-      # Runs HTML validation
+      # Runs HTML validation and logs errors
       - name: Validate HTML
-        run: npx htmlhint .
+        run: |
+          set -e
+          npx htmlhint . 2> html_validation_errors.log || true
+          if [ -s html_validation_errors.log ]; then
+            echo "HTML validation errors found. Check html_validation_errors.log for details."
+            exit 1
+          fi
 
-      # Runs CSS validation
+      # Runs CSS validation and logs errors
       - name: Validate CSS
-        run: npx stylelint "**/*.css"
+        run: |
+          set -e
+          npx stylelint "**/*.css" 2> css_validation_errors.log || true
+          if [ -s css_validation_errors.log ]; then
+            echo "CSS validation errors found. Check css_validation_errors.log for details."
+            exit 1
+          fi
+
+
 
