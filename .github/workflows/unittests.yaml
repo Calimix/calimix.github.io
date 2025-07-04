@@ -29,10 +29,20 @@ jobs:
         with:
           node-version: '16'
 
-      # Installs HTMLHint and Stylelint
+      # Caching pnpm dependencies
+      - name: Cache pnpm
+        uses: actions/cache@v3
+        with:
+          path: ~/.pnpm-store
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-
+
+      # Installs HTMLHint and Stylelint using pnpm
       - name: Install dependencies
         run: |
-          npm install htmlhint stylelint stylelint-config-standard --save-dev
+          npm install -g pnpm
+          pnpm install htmlhint stylelint stylelint-config-standard --save-dev
 
       # Runs HTML validation
       - name: Validate HTML
